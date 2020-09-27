@@ -1,4 +1,5 @@
 import os
+import sys
 
 
 # PATTERN FOR THE GAME
@@ -16,14 +17,16 @@ def switch(i):
     }
     return switcher.get(i, "Invalid day of week")
 
-target = ""
+target = "" if(len(sys.argv) <= 1) else sys.argv[1]
+used = []
 guessed = []
 wrong = 0
 
 def setAWord():
     global target
     os.system('clear')
-    target=input('Set A word to guess:\n')
+    if(target is ""):
+        target=input('Set A word to guess:\n')
     os.system('clear')
 
 def prepare():
@@ -32,7 +35,10 @@ def prepare():
     if(len(guessed) <= 0):
         os.system('clear')
         for i in range(len(target)):
-            guessed.append("_")
+            if(target[i] != " "):
+                guessed.append("_")
+            else:
+                guessed.append(" ")
     tmp = ""
     for l in guessed:
         tmp += l
@@ -52,6 +58,7 @@ def check(n):
 def process(n,wd):
     global wrong
     global guessed
+    global used
     os.system('clear')
     if(n is False or guessed[n] != "_"):
         wrong += 1
@@ -59,11 +66,19 @@ def process(n,wd):
             print("Game Over: You Lose!")
             return False
     else:
-        guessed[n] = wd
+        for i in range(len(target)):
+            if(target[i] == wd):
+                guessed[i] = wd
+    if(not wd in used):
+        used.append(wd + ", ")
 
 
 def guess():
-    val = input("\nGuess a letter:\n")
+    used_tmp = ""
+    for l in used:
+        used_tmp += l
+    print('\nUsed letters:\n',used_tmp)
+    val = input("Guess a letter:\n")
     if(process(check(val), val) is False):
         return
     else:
